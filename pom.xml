@@ -99,6 +99,10 @@
                                     </limits>
                                 </rule>
                             </rules>
+                            <excludes>
+                                <exclude>dev/ias/springtextboard/model/**</exclude>
+                                <exclude>dev/ias/springtextboard/SpringTextboardApplication.class</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
