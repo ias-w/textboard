@@ -9,11 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -53,11 +53,8 @@ class EntryServiceUnitTest {
 
         Entry createdEntry = entryService.createEntry(entry1);
 
-        assertThat(createdEntry).isNotNull();
-        assertThat(entry1.getTitle()).isEqualTo(createdEntry.getTitle());
-        assertThat(entry1.getText()).isEqualTo(createdEntry.getText());
-        assertThat(entry1.getAuthor()).isEqualTo(createdEntry.getAuthor());
-        assertThat(entry1.getCreationDate()).isEqualTo(createdEntry.getCreationDate());
+        then(entryRepository).should().save(entry1);
+        assertThat(entry1).usingRecursiveComparison().isEqualTo(createdEntry);
     }
 
     @Test
@@ -66,13 +63,57 @@ class EntryServiceUnitTest {
         given(entryRepository.findAll())
                 .willReturn(List.of(entry1, entry2));
 
-        Iterable<Entry> allEntries = entryService.getEntries();
+        List<Entry> allEntries = entryService.getEntries();
 
-        assertThat(allEntries).isNotNull();
-        Iterator<Entry> iterator = allEntries.iterator();
-        assertThat(iterator.hasNext()).isTrue();
-        assertThat(iterator.next()).isEqualTo(entry1);
-        assertThat(iterator.hasNext()).isTrue();
-        assertThat(iterator.next()).isEqualTo(entry2);
+        then(entryRepository).should().findAll();
+        assertThat(allEntries).usingRecursiveComparison().isEqualTo(List.of(entry1, entry2));
+    }
+
+    @Test
+    @Order(3)
+    void shouldFindByTitle() {
+        given(entryRepository.findByTitle("title1"))
+                .willReturn(List.of(entry1));
+
+        List<Entry> foundEntries = entryService.findByTitle("title1");
+
+        then(entryRepository).should().findByTitle("title1");
+        assertThat(foundEntries).containsExactly(entry1);
+    }
+
+    @Test
+    @Order(4)
+    void shouldFindByTitleContainingIgnoreCase() {
+        given(entryRepository.findByTitleContainingIgnoreCase("title"))
+                .willReturn(List.of(entry1, entry2));
+
+        List<Entry> foundEntries = entryService.findByTitleContainingIgnoreCase("title");
+
+        then(entryRepository).should().findByTitleContainingIgnoreCase("title");
+        assertThat(foundEntries).containsExactly(entry1, entry2);
+    }
+
+    @Test
+    @Order(5)
+    void shouldFindByAuthor() {
+        given(entryRepository.findByAuthor("author1"))
+                .willReturn(List.of(entry1));
+
+        List<Entry> foundEntries = entryService.findByAuthor("author1");
+
+        then(entryRepository).should().findByAuthor("author1");
+        assertThat(foundEntries).containsExactly(entry1);
+    }
+
+    @Test
+    @Order(6)
+    void shouldFindByAuthorContainsIgnoreCase() {
+        given(entryRepository.findByAuthorContainsIgnoreCase("author"))
+                .willReturn(List.of(entry1, entry2));
+
+        List<Entry> foundEntries = entryService.findByAuthorContainsIgnoreCase("author");
+
+        then(entryRepository).should().findByAuthorContainsIgnoreCase("author");
+        assertThat(foundEntries).containsExactly(entry1, entry2);
     }
 }
