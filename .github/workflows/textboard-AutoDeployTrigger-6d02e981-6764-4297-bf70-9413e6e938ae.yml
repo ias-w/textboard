@@ -36,12 +36,12 @@ jobs:
         with:
           appSourcePath: ${{ github.workspace }}
           _dockerfilePathKey_: _dockerfilePath_
-          registryUrl: 
+          registryUrl: crspringtextboard.azurecr.io
           registryUsername: ${{ secrets.TEXTBOARD_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.TEXTBOARD_REGISTRY_PASSWORD }}
           containerAppName: textboard
           resourceGroup: rg-textboard
-          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
+          imageToBuild: crspringtextboard.azurecr.io/textboard:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
 
