@@ -7,7 +7,17 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .section {
+            flex: 1; /* Allows each section to take up equal space */
+            margin: 0 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
         }
         .entry-form {
             margin-bottom: 20px;
@@ -16,8 +26,7 @@
             display: block;
             margin-bottom: 10px;
             padding: 8px;
-            width: 100%;
-            max-width: 400px;
+            width: 98%;
         }
         .entry-form button {
             padding: 8px 16px;
@@ -28,70 +37,90 @@
         }
         .entries {
             margin-top: 20px;
-        }
-        .entry {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
+            min-height: 1000px;
+            max-height: 4000px; /* Set a max height for scroll */
+            overflow-y: auto; /* Add scroll if overflow */
         }
         .entry h3 {
             margin: 0 0 5px;
         }
-        .entry .author {
-            font-size: 0.9em;
-            color: #555;
-        }
-        .entry .date {
-            font-size: 0.8em;
-            color: #888;
-        }
     </style>
 </head>
 <body>
-<h1>Text Board</h1>
+<!-- Leftmost section: Entry Creation and All Entries -->
+<div class="section">
+    <div class="entry-form">
+        <h2>Create New Entry</h2>
+        <input type="text" id="title" placeholder="Title" required>
+        <textarea id="text" placeholder="Text" rows="4" required></textarea>
+        <input type="text" id="author" placeholder="Author" required>
+        <button onclick="createEntry()">Submit</button>
+    </div>
 
-<!-- Form to create a new entry -->
-<div class="entry-form">
-    <h2>Create New Entry</h2>
-    <input type="text" id="title" placeholder="Title" required>
-    <textarea id="text" placeholder="Text" rows="4" required></textarea>
-    <input type="text" id="author" placeholder="Author" required>
-    <button onclick="createEntry()">Submit</button>
+    <div class="entries">
+        <h2>All Entries</h2>
+        <div id="entry-list"></div>
+    </div>
 </div>
 
-<!-- List of entries -->
-<div class="entries">
-    <h2>All Entries</h2>
-    <div id="entry-list"></div>
+<!-- Middle section: Search by Title -->
+<div class="section">
+    <div class="entry-form">
+        <h2>Searching By Title</h2>
+        <input type="text" id="searchTitle" placeholder="Enter title to search">
+        <button onclick="searchByTitle()">Exact Search</button>
+        <button onclick="searchByTitleContaining()">Partial Search</button>
+    </div>
+    <div class="entries">
+        <h2>Search Results</h2>
+        <div id="search-title-results"></div>
+    </div>
+</div>
+
+<!-- Rightmost section: Search by Author -->
+<div class="section">
+    <div class="entry-form">
+        <h2>Searching By Author</h2>
+        <input type="text" id="searchAuthor" placeholder="Enter author to search">
+        <button onclick="searchByAuthor()">Exact Search</button>
+        <button onclick="searchByAuthorContaining()">Partial Search</button>
+    </div>
+    <div class="entries">
+        <h2>Search Results</h2>
+        <div id="search-author-results"></div>
+    </div>
 </div>
 
 <script>
     // Fetch and display all entries when the page loads
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         fetchEntries();
         // Auto-refresh the entries every 3 seconds (3000 milliseconds)
-        setInterval(fetchEntries, 3000);
+        setInterval(refreshAllSections, 3000);
     });
+
+    // Refresh all sections
+    function refreshAllSections() {
+        fetchEntries(); // Refresh all entries
+        if (searchHasBeenMade()) {
+            refreshTitleSearchResults();
+            refreshAuthorSearchResults();
+        }
+    }
+
+    // Track if a search has been made
+    let titleSearchExactMade = false;
+    let titleSearchPartialMade = false;
+
+    let authorSearchExactMade = false;
+    let authorSearchPartialMade = false;
 
     // Fetch all entries from the server and display them
     function fetchEntries() {
         fetch('/api/v1/entry')
             .then(response => response.json())
             .then(data => {
-                const entryList = document.getElementById('entry-list');
-                entryList.innerHTML = '';
-                // Reverse the entries array to display the most recent entries first
-                data.reverse().forEach(entry => {
-                    const entryDiv = document.createElement('div');
-                    entryDiv.classList.add('entry');
-                    entryDiv.innerHTML = `
-                    <h3>${entry.title}</h3>
-                    <p>${entry.text}</p>
-                    <div class="author">By: ${entry.author}</div>
-                    <div class="date">Created on: ${new Date(entry.creationDate).toLocaleString()}</div>
-                `;
-                    entryList.appendChild(entryDiv);
-                });
+                displayEntries(data, document.getElementById('entry-list'));
             })
             .catch(error => console.error('Error fetching entries:', error));
     }
@@ -133,6 +162,128 @@
         document.getElementById('title').value = '';
         document.getElementById('text').value = '';
         document.getElementById('author').value = '';
+    }
+
+    // Display entries on the page
+    function displayEntries(data, entryList) {
+        entryList.innerHTML = '';
+        // Reverse the entries array to display the most recent entries first
+        data.reverse().forEach(entry => {
+            const entryDiv = document.createElement('div');
+            entryDiv.classList.add('entry');
+            entryDiv.innerHTML = `
+                <h3>${entry.title}</h3>
+                <p>${entry.text}</p>
+                <div class="author">By: ${entry.author}</div>
+                <div class="date">Created on: ${new Date(entry.creationDate).toLocaleString()}</div>
+            `;
+            entryList.appendChild(entryDiv);
+        });
+    }
+
+    // Search entries by title and display them
+    function searchByTitle() {
+        const title = document.getElementById('searchTitle').value;
+
+        titleSearchExactMade = true;
+        titleSearchPartialMade = false;
+
+        fetch(`/api/v1/entry/search/title?title=${encodeURIComponent(title)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error fetching entries');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayEntries(data, document.getElementById('search-title-results'));
+            })
+            .catch(error => console.error('Error searching by title:', error));
+    }
+
+    // Search entries by title containing the given string and display them
+    function searchByTitleContaining() {
+        const title = document.getElementById('searchTitle').value;
+
+        titleSearchPartialMade = true;
+        titleSearchExactMade = false;
+
+        fetch(`/api/v1/entry/search/title/contains?title=${encodeURIComponent(title)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error fetching entries');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayEntries(data, document.getElementById('search-title-results'));
+            })
+            .catch(error => console.error('Error searching by title:', error));
+    }
+
+    // Search entries by author and display them
+    function searchByAuthor() {
+        const author = document.getElementById('searchAuthor').value;
+
+        authorSearchExactMade = true;
+        authorSearchPartialMade = false;
+
+        fetch(`/api/v1/entry/search/author?author=${encodeURIComponent(author)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error fetching entries');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayEntries(data, document.getElementById('search-author-results'));
+            })
+            .catch(error => console.error('Error searching by author:', error));
+    }
+
+    // Search entries by author containing the given string and display them
+    function searchByAuthorContaining() {
+        const author = document.getElementById('searchAuthor').value;
+
+        authorSearchPartialMade = true;
+        authorSearchExactMade = false;
+
+        fetch(`/api/v1/entry/search/author/contains?author=${encodeURIComponent(author)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error fetching entries');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayEntries(data, document.getElementById('search-author-results'));
+            })
+            .catch(error => console.error('Error searching by author:', error));
+    }
+
+    // Check if a search has been made for either title or author
+    function searchHasBeenMade() {
+        return titleSearchExactMade || titleSearchPartialMade || authorSearchExactMade || authorSearchPartialMade;
+    }
+
+    // Refresh title search results
+    function refreshTitleSearchResults() {
+        if (titleSearchExactMade) {
+            searchByTitle();
+        }
+        if (titleSearchPartialMade) {
+            searchByTitleContaining();
+        }
+    }
+
+    // Refresh author search results
+    function refreshAuthorSearchResults() {
+        if (authorSearchExactMade) {
+            searchByAuthor();
+        }
+        if (authorSearchPartialMade) {
+            searchByAuthorContaining();
+        }
     }
 </script>
 </body>
