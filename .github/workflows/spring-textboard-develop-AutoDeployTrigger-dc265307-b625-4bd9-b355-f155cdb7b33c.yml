@@ -36,13 +36,18 @@ jobs:
         with:
           appSourcePath: ${{ github.workspace }}
           _dockerfilePathKey_: _dockerfilePath_
-          registryUrl: 
+          registryUrl: crspringtextboard.azurecr.io
           registryUsername: ${{ secrets.SPRINGTEXTBOARDDEVELOP_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.SPRINGTEXTBOARDDEVELOP_REGISTRY_PASSWORD }}
           containerAppName: spring-textboard-develop
           resourceGroup: rg-textboard-dev
-          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
+          imageToBuild: crspringtextboard.azurecr.io/spring-textboard-develop:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
+          environmentVariables: >
+            AZURE_SQL_SERVER_FQDN=secretref:azure-sql-server-fqdn
+            AZURE_SQL_SERVER_DATABASE_NAME=secretref:azure-sql-server-database-name
+            AZURE_SQL_SERVER_ADMIN_LOGIN=secretref:azure-sql-server-admin-login
+            AZURE_SQL_SERVER_ADMIN_PASSWORD=secretref:azure-sql-server-admin-password
 
 
