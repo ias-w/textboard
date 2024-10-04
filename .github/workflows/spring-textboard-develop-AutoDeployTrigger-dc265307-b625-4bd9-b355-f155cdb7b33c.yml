@@ -1,14 +1,14 @@
-name: Trigger auto deployment for textboard
+name: Trigger auto deployment for spring-textboard-develop
 
 # When this action will be executed
 on:
   # Automatically trigger it when detected changes in repo
   push:
     branches: 
-      [ main ]
+      [ develop ]
     paths:
     - '**'
-    - '.github/workflows/textboard-AutoDeployTrigger-6d02e981-6764-4297-bf70-9413e6e938ae.yml'
+    - '.github/workflows/spring-textboard-develop-AutoDeployTrigger-dc265307-b625-4bd9-b355-f155cdb7b33c.yml'
 
   # Allow manual trigger 
   workflow_dispatch:      
@@ -27,9 +27,9 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.TEXTBOARD_AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.TEXTBOARD_AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.TEXTBOARD_AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.SPRINGTEXTBOARDDEVELOP_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.SPRINGTEXTBOARDDEVELOP_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.SPRINGTEXTBOARDDEVELOP_AZURE_SUBSCRIPTION_ID }}
 
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v2
@@ -37,11 +37,11 @@ jobs:
           appSourcePath: ${{ github.workspace }}
           _dockerfilePathKey_: _dockerfilePath_
           registryUrl: crspringtextboard.azurecr.io
-          registryUsername: ${{ secrets.TEXTBOARD_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.TEXTBOARD_REGISTRY_PASSWORD }}
-          containerAppName: textboard
-          resourceGroup: rg-textboard
-          imageToBuild: crspringtextboard.azurecr.io/textboard:${{ github.sha }}
+          registryUsername: ${{ secrets.SPRINGTEXTBOARDDEVELOP_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.SPRINGTEXTBOARDDEVELOP_REGISTRY_PASSWORD }}
+          containerAppName: spring-textboard-develop
+          resourceGroup: rg-textboard-dev
+          imageToBuild: crspringtextboard.azurecr.io/spring-textboard-develop:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
           environmentVariables: >
