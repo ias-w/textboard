@@ -10,7 +10,7 @@
     </parent>
     <groupId>dev.ias</groupId>
     <artifactId>spring-textboard</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>spring-textboard</name>
     <description>spring-textboard</description>
     <url/>
