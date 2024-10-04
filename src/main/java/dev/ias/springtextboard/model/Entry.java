@@ -1,5 +1,6 @@
 package dev.ias.springtextboard.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -27,6 +28,7 @@ public class Entry {
     @GeneratedValue
     private Long id;
     private String title;
+    @Column(length = 1023)
     private String text;
     private String author;
     private Instant creationDate;
