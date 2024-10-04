@@ -44,5 +44,10 @@ jobs:
           imageToBuild: crspringtextboard.azurecr.io/spring-textboard-develop:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
+          environmentVariables: >
+            AZURE_SQL_SERVER_FQDN=secretref:azure-sql-server-fqdn
+            AZURE_SQL_SERVER_DATABASE_NAME=secretref:azure-sql-server-database-name
+            AZURE_SQL_SERVER_ADMIN_LOGIN=secretref:azure-sql-server-admin-login
+            AZURE_SQL_SERVER_ADMIN_PASSWORD=secretref:azure-sql-server-admin-password
 
 
