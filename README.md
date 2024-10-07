@@ -11,6 +11,7 @@ and **GitHub Actions** CI/CD.
 
 - Create, retrieve, and search text entries
 - REST API for text management
+- Request logging for all endpoints
 - Multi-database support with H2 for testing and MS SQL for production
 - GitHub Actions CI/CD pipeline with deployment to Azure
 
@@ -25,6 +26,7 @@ and **GitHub Actions** CI/CD.
 - **Azure** for cloud deployment
 - **Gitflow** based branching strategy
 - **SemVer** versioning scheme
+- **Flyway** database migration
 - **H2** in-memory database for unit testing
 - **MS SQL** for production database
 
