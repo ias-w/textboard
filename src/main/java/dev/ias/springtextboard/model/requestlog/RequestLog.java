@@ -24,6 +24,7 @@ public class RequestLog {
     private String userAgent;
     private String method;
     private String path;
+    private Long accessCount;
     @CreationTimestamp
     private Instant createdAt;
     @UpdateTimestamp
