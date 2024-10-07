@@ -140,8 +140,7 @@
         const newEntry = {
             title: title,
             text: text,
-            author: author,
-            creationDate: new Date().toISOString() // Add current date and time
+            author: author
         };
 
         fetch('/api/v1/entry', {

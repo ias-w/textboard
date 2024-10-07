@@ -3,6 +3,7 @@ package dev.ias.springtextboard.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.ias.springtextboard.model.Entry;
 import dev.ias.springtextboard.service.EntryService;
+import dev.ias.springtextboard.service.RequestLoggingService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,6 +29,8 @@ public class EntryControllerUnitTest {
     private MockMvc mockMvc;
     @MockBean
     private EntryService entryService;
+    @MockBean
+    private RequestLoggingService requestLoggingService;
     @Autowired
     private ObjectMapper objectMapper;
     private Entry entry1;

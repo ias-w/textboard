@@ -49,5 +49,6 @@ jobs:
             AZURE_SQL_SERVER_DATABASE_NAME=secretref:azure-sql-server-database-name
             AZURE_SQL_SERVER_ADMIN_LOGIN=secretref:azure-sql-server-admin-login
             AZURE_SQL_SERVER_ADMIN_PASSWORD=secretref:azure-sql-server-admin-password
+            SPRING_PROFILES_ACTIVE=production
 
 

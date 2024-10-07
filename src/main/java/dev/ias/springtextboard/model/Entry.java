@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -31,6 +32,7 @@ public class Entry {
     @Column(length = 1023)
     private String text;
     private String author;
+    @CreationTimestamp
     private Instant creationDate;
 
     public Entry(String title, String text, String author, Instant creationDate) {

@@ -13,6 +13,7 @@ public class EntryService {
     private final EntryRepository repository;
 
     public Entry createEntry(Entry entry) {
+        entry.setId(null);
         return repository.save(entry);
     }
 
